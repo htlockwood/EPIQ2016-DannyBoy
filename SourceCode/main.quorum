@@ -1,0 +1,375 @@
+// Danny Boy, Tradional Irish Melody, Arranged by Tim Lockwood
+// This a music only creation at this time, you are invited to add commands to the motor
+// to create movement for this song. 
+use Libraries.Robots.Lego.Button
+use Libraries.Robots.Lego.Sound
+use Libraries.Robots.Lego.Screen
+use Libraries.Robots.Lego.Utility
+use Libraries.Robots.Lego.Motor
+use Libraries.Robots.Lego.TouchSensor
+use Libraries.Robots.Lego.UltrasonicSensor
+use Libraries.Robots.Lego.ColorSensor
+use Libraries.Robots.Lego.GyroSensor
+use Libraries.System.File
+use Libraries.Sound.Audio
+//instantiate objects
+Button buttonCtrl
+Sound sound
+Screen screen
+Utility utility
+Motor motor
+UltrasonicSensor ultrasonicSensor
+TouchSensor touchSensor
+ColorSensor colorSensor
+GyroSensor gyroSensor
+File audio1
+File audio2
+File audio3
+File audio4
+//set the path or location of the audio files, this assumes the wav files exisit in the same directory as the running JAR file. 
+audio1:SetPath("operatnl.wav")
+audio2:SetPath("goodbye.wav")
+audio3:SetPath("1moment2.wav")
+audio4:SetPath("pacman_intro8.wav")
+//set sensor ports
+ultrasonicSensor:SetPort(2)
+touchSensor:SetPort(4)
+colorSensor:SetPort(1)
+gyroSensor:SetPort(3)
+//create some variables and set their value
+integer musicspeed=1
+integer vol=100 
+integer spin72=46 //speed for 288 turn
+integer spin90=19
+//  creates pitch varible for the musical tempered scale with letter note names (A-G) and octive displacement (0-9) 
+//The lowcase b is the symbol for flat. Sharps are created by refering to the next name down in the list F# = Gb.
+integer C0=16
+integer Db0=17
+integer D0=18
+integer Eb0=19
+integer E0=21
+integer F0=22
+integer Gb0=23
+integer G0=24
+integer Ab0=26
+integer A0=28
+integer Bb0=29
+integer B0=31
+integer C1=33
+integer Db1=35
+integer D1=37
+integer Eb1=39
+integer E1=41
+integer F1=44
+integer Gb1=46
+integer G1=49
+integer Ab1=52
+integer A1=55
+integer Bb1=58
+integer B1=62
+integer C2=65
+integer Db2=69
+integer D2=73
+integer Eb2=78
+integer E2=82
+integer F2=87
+integer Gb2=92
+integer G2=98
+integer Ab2=104
+integer A2=110
+integer Bb2=117
+integer B2=123
+integer C3=131
+integer Db3=139
+integer D3=147
+integer Eb3=156
+integer E3=165
+integer F3=175
+integer Gb3=185
+integer G3=196
+integer Ab3=208
+integer A3=220
+integer Bb3=233
+integer B3=247
+integer C4=262
+integer Db4=277
+integer D4=294
+integer Eb4=311
+integer E4=330
+integer F4=349
+integer Gb4=370
+integer G4=392
+integer Ab4=415
+integer A4=440
+integer Bb4=466
+integer B4=494
+integer C5=523
+integer Db5=554
+integer D5=587
+integer Eb5=622
+integer E5=659
+integer F5=698
+integer Gb5=740
+integer G5=784
+integer Ab5=831
+integer A5=880
+integer Bb5=932
+integer B5=988
+integer C6=1047
+integer Db6=1109
+integer D6=1175
+integer Eb6=1245
+integer E6=1319
+integer F6=1397
+integer Gb6=1480
+integer G6=1568
+integer Ab6=1661
+integer A6=1760
+integer Bb6=1865
+integer B6=1976
+integer C7=2093
+integer Db7=2217
+integer D7=2349
+integer Eb7=2489
+integer E7=2637
+integer F7=2794
+integer Gb7=2960
+integer G7=3136
+integer Ab7=3322
+integer A7=3520
+integer Bb7=3729
+integer B7=3951
+integer C8=4186
+integer Db8=4435
+integer D8=4699
+integer Eb8=4978
+integer E8=5274
+integer F8=5588
+integer Gb8=5920
+integer G8=6272
+integer Ab8=6645
+integer A8=7040
+integer Bb8=7459
+integer B8=7902
+integer C9=8372
+integer Db9=8870
+integer D9=9397
+integer Eb9=9956
+integer E9=10548
+integer F9=11175
+integer Gb9=11840
+integer G9=12544
+integer Ab9=13290
+integer A9=14080
+integer Bb9=14917
+integer B9=15804
+//create duratation variables W = Whole Note h= half note, q=quarternote. dq=dotted quarter
+integer w=1600// Whole Note
+integer dh=1200// Dotted Half Note
+integer h=800// Half Note
+integer dq=600// Dotted Quarter Note
+integer q=400// Quarter Note
+integer de=300// Dotted Eight Note
+integer e=200 // Eigth note
+integer s=100 // 16th Note
+// The programer can now call for musical tones using the note names and octive and the length of the sound using traditional names. 
+// sound:PlayTone(A4,w) this will create the a sound the fequency of 440 htz lasting 1600 milliseconds 
+// to create musical silence use utility:DelayMilliseconds(W) using the duratation varibles. 
+
+//output to the screen
+screen:OutputCenterLarge("Danny", 1)
+screen:OutputCenterLarge("Boy", 3)
+screen:OutputCenter("<=slow >=fast", 5)
+screen:OutputCenter("v=soft ^=loud", 6)
+buttonCtrl:SetLightPattern(3)
+// Set to full volume and play two intro wav files then wait a little
+sound:SetVolume(100) 
+sound:PlayAudio(audio3)
+sound:SetVolume(20) 
+sound:PlayAudio(audio4)
+utility:DelayMilliseconds(w)
+buttonCtrl:SetLightPattern(8)
+//start a loop to permit changing the volume and speed settings and loop till the touch sensor is held down.
+repeat until touchSensor:IsPressed()
+    if buttonCtrl:IsButtonPressed(buttonCtrl:DOWN_BUTTON)
+        vol=vol-10
+        if vol <1
+            vol=10
+        end
+    elseif buttonCtrl:IsButtonPressed(buttonCtrl:UP_BUTTON)
+        vol=vol+10
+        if vol >100
+            vol=100
+        end
+    elseif buttonCtrl:IsButtonPressed(buttonCtrl:RIGHT_BUTTON)
+        musicspeed=musicspeed+1
+        if musicspeed>4
+           musicspeed=4
+        end
+    elseif buttonCtrl:IsButtonPressed(buttonCtrl:LEFT_BUTTON)
+            musicspeed=musicspeed-1
+        if musicspeed<1
+           musicspeed=1
+        end
+    end
+// reset Variables for note length to the double lenth needed for this song
+w=1600/musicspeed*2 // Whole Note
+dh=1200/musicspeed*2// Dotted Half Note
+h=800/musicspeed*2 // Half Note
+dq=600/musicspeed*2 // Dotted Quarter Note
+q=400/musicspeed*2// Quarter Note
+de=300/musicspeed*2// Dotted Eight Note
+e=200/musicspeed*2 // Eigth note
+s=100/musicspeed*2 // 16th Note
+//once the program has executed and display is set up it will play the following sounds until the touch sensor it held down.
+sound:SetVolume(100) 
+sound:PlayAudio(audio1)// HAL let's us know everything is ready.
+utility:DelayMilliseconds(w)
+sound:SetVolume(vol) 
+colorSensor:SetLightColor(colorSensor:BLUE)  
+sound:PlayTone(Eb6,e)
+colorSensor:SetLightColor(colorSensor:RED)
+utility:DelayMilliseconds(e)
+colorSensor:SetLightColor(colorSensor:WHITE)
+buttonCtrl:SetLightPattern(5)
+end //now it is time to go!
+//Create a delay and tempo count off before song
+repeat 2 times 
+    colorSensor:SetLightColor(colorSensor:RED)
+    sound:PlayTone(1000,q)
+    utility:DelayMilliseconds(q)
+    colorSensor:SetLightColor(colorSensor:BLUE)
+    sound:PlayTone(Eb3,q) 
+    utility:DelayMilliseconds(q)
+end 
+repeat 4 times 
+    colorSensor:SetLightColor(colorSensor:RED)
+    sound:PlayTone(Eb4,e) 
+    utility:DelayMilliseconds(e)
+    colorSensor:SetLightColor(colorSensor:BLUE)
+    sound:PlayTone(Eb4,e) 
+    utility:DelayMilliseconds(e)
+end 
+colorSensor:SetLightColor(colorSensor:WHITE)
+utility:DelayMilliseconds(w) // 4 beat silence before start
+sound:SetVolume(vol) 
+
+// ======= Song starts ======= 
+repeat 2 times
+//1
+    motor:SetSpeed("B",40)
+    motor:SetSpeed("C",20)
+    motor:RotateForward("B")
+    motor:RotateForward("C")
+
+    sound:PlayTone(E4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(G4,e)
+//2
+    sound:PlayTone(A4,dq)
+    sound:PlayTone(G4,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(A4,e)
+//3    
+    sound:PlayTone(G4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(D4,dq)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(Bb4,e)
+//4
+    sound:PlayTone(C5,dq)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(A4,e)
+//5
+    sound:PlayTone(G4,h)
+    utility:DelayMilliseconds(e)
+    sound:PlayTone(E4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(G4,e)
+//6
+    sound:PlayTone(A4,dq)
+    sound:PlayTone(G4,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(A4,e)
+//7
+    sound:PlayTone(G4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(D4,dq)
+    sound:PlayTone(E4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(G4,e)
+//8
+    sound:PlayTone(A4,dq)
+    sound:PlayTone(Bb4,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(G4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(G4,e)
+//9
+    sound:PlayTone(F4,h)
+    utility:DelayMilliseconds(e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(E5,e)
+//10
+    sound:PlayTone(F5,dq)
+    sound:PlayTone(E5,e)
+    sound:PlayTone(E5,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(D5,e)
+//11
+    sound:PlayTone(C5,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(F4,dq)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(E5,e)
+//12
+    sound:PlayTone(F5,dq)
+    sound:PlayTone(E5,e)
+    sound:PlayTone(E5,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(A4,e)
+//13
+    sound:PlayTone(G4,h)
+    utility:DelayMilliseconds(e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(C5,e)
+//14
+    sound:PlayTone(A5,dq)
+    sound:PlayTone(G5,e)
+    sound:PlayTone(G5,e)
+    sound:PlayTone(F5,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(F5,e)
+//15
+    sound:PlayTone(C5,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(F4,dq)
+    sound:PlayTone(E4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(G4,e)
+//16
+    sound:PlayTone(A4,e)
+    sound:PlayTone(D5,e)
+    sound:PlayTone(C5,e)
+    sound:PlayTone(A4,e)
+    sound:PlayTone(G4,e)
+    sound:PlayTone(F4,e)
+    sound:PlayTone(D4,e)
+    sound:PlayTone(E4,e)
+//17
+    sound:PlayTone(F4,h)
+    utility:DelayMilliseconds(e)
+end
